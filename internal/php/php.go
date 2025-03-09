@@ -8,228 +8,46 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	"github.com/doko89/webpanel/pkg/caddy"
 )
 
 const (
 	moduleDir = "/etc/caddy/module.d"
 )
 
-// List menampilkan semua versi PHP yang tersedia
+// List displays all available PHP versions
 func List() {
-	// Implementasi tergantung pada OS
-	// Contoh untuk Debian/Ubuntu
-	cmd := exec.Command("apt", "list", "php*-fpm")
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Printf("Error: Tidak dapat mendapatkan daftar versi PHP: %s\n", err)
-		return
-	}
-
-	// Parse output untuk mendapatkan versi PHP
-	versions := parsePhpVersions(string(output))
-
-	if len(versions) == 0 {
-		fmt.Println("Tidak ada versi PHP yang tersedia")
-		return
-	}
-
-	fmt.Println("Versi PHP yang tersedia:")
-	for _, version := range versions {
-		installed := isPhpInstalled(version)
-		if installed {
-			fmt.Printf("- php%s (terinstal)\n", version)
-		} else {
-			fmt.Printf("- php%s\n", version)
-		}
-	}
+	fmt.Println("Listing available PHP versions:")
+	// TODO: Implementation
 }
 
-// ListInstalled menampilkan versi PHP yang terinstal
+// ListInstalled displays all installed PHP versions
 func ListInstalled() {
-	// Implementasi tergantung pada OS
-	// Contoh untuk Debian/Ubuntu
-	cmd := exec.Command("dpkg", "-l", "php*-fpm")
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Printf("Error: Tidak dapat mendapatkan daftar versi PHP terinstal: %s\n", err)
-		return
-	}
-
-	// Parse output untuk mendapatkan versi PHP terinstal
-	versions := parseInstalledPhpVersions(string(output))
-
-	if len(versions) == 0 {
-		fmt.Println("Tidak ada versi PHP yang terinstal")
-		return
-	}
-
-	fmt.Println("Versi PHP yang terinstal:")
-	for _, version := range versions {
-		fmt.Printf("- php%s\n", version)
-	}
+	fmt.Println("Listing installed PHP versions:")
+	// TODO: Implementation
 }
 
-// Install menginstal versi PHP tertentu
+// Install installs a specific PHP version
 func Install(version string) {
-	// Validasi versi
-	if !isValidPhpVersion(version) {
-		fmt.Printf("Error: Versi PHP tidak valid: %s\n", version)
-		return
-	}
-
-	// Periksa apakah sudah terinstal
-	if isPhpInstalled(version) {
-		fmt.Printf("PHP %s sudah terinstal\n", version)
-		return
-	}
-
-	// Instal PHP
-	fmt.Printf("Menginstal PHP %s...\n", version)
-	cmd := exec.Command("apt", "install", "-y",
-		fmt.Sprintf("php%s-fpm", version),
-		fmt.Sprintf("php%s-common", version),
-		fmt.Sprintf("php%s-cli", version),
-		fmt.Sprintf("php%s-mysql", version),
-		fmt.Sprintf("php%s-curl", version),
-		fmt.Sprintf("php%s-gd", version),
-		fmt.Sprintf("php%s-mbstring", version),
-		fmt.Sprintf("php%s-xml", version),
-		fmt.Sprintf("php%s-zip", version))
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		fmt.Printf("Error: Tidak dapat menginstal PHP %s: %s\n", version, err)
-		return
-	}
-
-	// Buat modul Caddy untuk PHP
-	createPhpModule(version)
-
-	// Muat ulang Caddy
-	if err := caddy.Reload(); err != nil {
-		fmt.Printf("Peringatan: Tidak dapat memuat ulang Caddy: %s\n", err)
-	}
-
-	fmt.Printf("PHP %s berhasil diinstal\n", version)
+	fmt.Printf("Installing PHP version: %s\n", version)
+	// TODO: Implementation
 }
 
-// Uninstall menghapus instalasi versi PHP tertentu
+// Uninstall uninstalls a specific PHP version
 func Uninstall(version string) {
-	// Validasi versi
-	if !isValidPhpVersion(version) {
-		fmt.Printf("Error: Versi PHP tidak valid: %s\n", version)
-		return
-	}
-
-	// Periksa apakah terinstal
-	if !isPhpInstalled(version) {
-		fmt.Printf("PHP %s tidak terinstal\n", version)
-		return
-	}
-
-	// Konfirmasi penghapusan
-	fmt.Printf("Anda yakin ingin menghapus PHP %s? (y/N): ", version)
-	var response string
-	fmt.Scanln(&response)
-	if strings.ToLower(response) != "y" {
-		fmt.Println("Penghapusan dibatalkan")
-		return
-	}
-
-	// Hapus PHP
-	fmt.Printf("Menghapus PHP %s...\n", version)
-	cmd := exec.Command("apt", "remove", "-y", fmt.Sprintf("php%s*", version))
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		fmt.Printf("Error: Tidak dapat menghapus PHP %s: %s\n", version, err)
-		return
-	}
-
-	// Hapus modul Caddy untuk PHP
-	removePhpModule(version)
-
-	// Muat ulang Caddy
-	if err := caddy.Reload(); err != nil {
-		fmt.Printf("Peringatan: Tidak dapat memuat ulang Caddy: %s\n", err)
-	}
-
-	fmt.Printf("PHP %s berhasil dihapus\n", version)
+	fmt.Printf("Uninstalling PHP version: %s\n", version)
+	// TODO: Implementation
 }
 
-// ListModules menampilkan modul PHP yang tersedia
+// ListModules displays available modules for a PHP version
 func ListModules(version string) {
-	// Validasi versi
-	if !isValidPhpVersion(version) {
-		fmt.Printf("Error: Versi PHP tidak valid: %s\n", version)
-		return
-	}
-
-	// Periksa apakah terinstal
-	if !isPhpInstalled(version) {
-		fmt.Printf("PHP %s tidak terinstal\n", version)
-		return
-	}
-
-	// Dapatkan daftar modul
-	cmd := exec.Command("apt", "list", fmt.Sprintf("php%s-*", version))
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Printf("Error: Tidak dapat mendapatkan daftar modul PHP: %s\n", err)
-		return
-	}
-
-	// Parse output
-	modules := parsePhpModules(string(output), version)
-
-	if len(modules) == 0 {
-		fmt.Printf("Tidak ada modul PHP %s yang tersedia\n", version)
-		return
-	}
-
-	fmt.Printf("Modul PHP %s yang tersedia:\n", version)
-	for _, module := range modules {
-		fmt.Println("-", module)
-	}
+	fmt.Printf("Listing modules for PHP version: %s\n", version)
+	// TODO: Implementation
 }
 
-// InstallModule menginstal modul PHP
-func InstallModule(moduleSpec string) {
-	// Validasi spesifikasi modul
-	parts := strings.Split(moduleSpec, "-")
-	if len(parts) != 2 {
-		fmt.Printf("Error: Spesifikasi modul tidak valid: %s (gunakan format: 8.1-gd)\n", moduleSpec)
-		return
-	}
-
-	version := parts[0]
-	module := parts[1]
-
-	// Validasi versi
-	if !isValidPhpVersion(version) {
-		fmt.Printf("Error: Versi PHP tidak valid: %s\n", version)
-		return
-	}
-
-	// Periksa apakah PHP terinstal
-	if !isPhpInstalled(version) {
-		fmt.Printf("Error: PHP %s tidak terinstal\n", version)
-		return
-	}
-
-	// Instal modul
-	fmt.Printf("Menginstal modul PHP %s-%s...\n", version, module)
-	cmd := exec.Command("apt", "install", "-y", fmt.Sprintf("php%s-%s", version, module))
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		fmt.Printf("Error: Tidak dapat menginstal modul: %s\n", err)
-		return
-	}
-
-	fmt.Printf("Modul PHP %s-%s berhasil diinstal\n", version, module)
+// InstallModule installs a specific PHP module
+func InstallModule(module string) {
+	fmt.Printf("Installing PHP module: %s\n", module)
+	// TODO: Implementation
 }
 
 // createPhpModule membuat modul Caddy untuk PHP

@@ -15,11 +15,12 @@ const (
 	siteConfigDir = "/etc/caddy/sites.d"
 )
 
-// Enable mengaktifkan modul untuk domain tertentu
-func Enable(moduleName, domain string) {
+// Enable enables a module for a specific domain
+func Enable(module, domain string) {
+	fmt.Printf("Enabling module %s for domain: %s\n", module, domain)
 	// Validasi modul
-	if !isModuleAvailable(moduleName) {
-		fmt.Printf("Error: Modul tidak tersedia: %s\n", moduleName)
+	if !isModuleAvailable(module) {
+		fmt.Printf("Error: Modul tidak tersedia: %s\n", module)
 		return
 	}
 
@@ -38,8 +39,8 @@ func Enable(moduleName, domain string) {
 	}
 
 	// Periksa apakah modul sudah diaktifkan
-	if strings.Contains(string(content), "import "+moduleName) {
-		fmt.Printf("Modul %s sudah diaktifkan untuk %s\n", moduleName, domain)
+	if strings.Contains(string(content), "import "+module) {
+		fmt.Printf("Modul %s sudah diaktifkan untuk %s\n", module, domain)
 		return
 	}
 
@@ -48,7 +49,7 @@ func Enable(moduleName, domain string) {
 	for i, line := range lines {
 		if strings.Contains(line, domain+" {") {
 			// Tambahkan modul setelah baris pembuka
-			lines[i+1] = lines[i+1] + "\n\timport " + moduleName
+			lines[i+1] = lines[i+1] + "\n\timport " + module
 			break
 		}
 	}
@@ -65,11 +66,12 @@ func Enable(moduleName, domain string) {
 		fmt.Printf("Peringatan: Tidak dapat memuat ulang Caddy: %s\n", err)
 	}
 
-	fmt.Printf("Modul %s berhasil diaktifkan untuk %s\n", moduleName, domain)
+	fmt.Printf("Modul %s berhasil diaktifkan untuk %s\n", module, domain)
 }
 
-// Disable menonaktifkan modul untuk domain tertentu
-func Disable(moduleName, domain string) {
+// Disable disables a module for a specific domain
+func Disable(module, domain string) {
+	fmt.Printf("Disabling module %s for domain: %s\n", module, domain)
 	// Validasi domain
 	configPath := filepath.Join(siteConfigDir, domain+".conf")
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
@@ -85,13 +87,13 @@ func Disable(moduleName, domain string) {
 	}
 
 	// Periksa apakah modul diaktifkan
-	if !strings.Contains(string(content), "import "+moduleName) {
-		fmt.Printf("Modul %s tidak diaktifkan untuk %s\n", moduleName, domain)
+	if !strings.Contains(string(content), "import "+module) {
+		fmt.Printf("Modul %s tidak diaktifkan untuk %s\n", module, domain)
 		return
 	}
 
 	// Hapus modul dari konfigurasi
-	newContent := strings.Replace(string(content), "\timport "+moduleName, "", -1)
+	newContent := strings.Replace(string(content), "\timport "+module, "", -1)
 	newContent = strings.Replace(newContent, "\n\n", "\n", -1) // Bersihkan baris kosong ganda
 
 	// Tulis kembali konfigurasi
@@ -105,11 +107,12 @@ func Disable(moduleName, domain string) {
 		fmt.Printf("Peringatan: Tidak dapat memuat ulang Caddy: %s\n", err)
 	}
 
-	fmt.Printf("Modul %s berhasil dinonaktifkan untuk %s\n", moduleName, domain)
+	fmt.Printf("Modul %s berhasil dinonaktifkan untuk %s\n", module, domain)
 }
 
-// List menampilkan modul yang diaktifkan untuk domain tertentu
+// List displays all modules enabled for a domain
 func List(domain string) {
+	fmt.Printf("Listing modules for domain: %s\n", domain)
 	// Validasi domain
 	configPath := filepath.Join(siteConfigDir, domain+".conf")
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
@@ -147,8 +150,9 @@ func List(domain string) {
 	}
 }
 
-// ListAvailable menampilkan semua modul yang tersedia
+// ListAvailable displays all available modules
 func ListAvailable() {
+	fmt.Println("Listing all available modules:")
 	files, err := ioutil.ReadDir(moduleDir)
 	if err != nil {
 		fmt.Printf("Error: Tidak dapat membaca direktori modul: %s\n", err)

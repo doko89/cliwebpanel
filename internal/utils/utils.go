@@ -8,35 +8,10 @@ import (
 	"strings"
 )
 
-// InstallDependencies menginstal semua dependensi yang diperlukan
+// InstallDependencies installs all required dependencies
 func InstallDependencies() {
-	fmt.Println("Menginstal dependensi yang diperlukan...")
-
-	// Periksa OS
-	osType := detectOS()
-
-	// Instal Caddy
-	installCaddy()
-
-	// Instal PHP repository
-	installPHPRepository(osType)
-
-	// Tanya pengguna untuk menginstal PHP
-	installPHPVersions()
-
-	// Tanya pengguna untuk menginstal Composer
-	installComposer()
-
-	// Tanya pengguna untuk menginstal Node.js
-	installNodeJS()
-
-	// Setup direktori dan pengguna
-	setupDirectories()
-
-	// Setup modul default
-	setupDefaultModules()
-
-	fmt.Println("Instalasi dependensi selesai!")
+	fmt.Println("Installing required dependencies...")
+	// TODO: Implementation
 }
 
 // detectOS mendeteksi sistem operasi

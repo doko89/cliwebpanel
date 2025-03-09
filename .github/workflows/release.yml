@@ -5,32 +5,35 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   build:
     name: Build and Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.17
+          go-version: '1.17'
 
       - name: Build binaries
         run: |
-          mkdir -p ./cmd/webpanel
-          cp main.go ./cmd/webpanel/main.go
-          mkdir -p ./internal/module
-          mkdir -p ./internal/site
-          mkdir -p ./internal/php
-          mkdir -p ./internal/proxy
-          mkdir -p ./internal/backup
-          mkdir -p ./internal/database
-          mkdir -p ./internal/utils
-          mkdir -p ./pkg/caddy
+          mkdir -p cmd/webpanel
+          cp main.go cmd/webpanel/
+          mkdir -p internal/module internal/site internal/php internal/proxy internal/backup internal/database internal/utils pkg/caddy
           
+          # Create empty files to ensure directories are built properly
+          touch internal/module/.gitkeep internal/site/.gitkeep internal/php/.gitkeep 
+          touch internal/proxy/.gitkeep internal/backup/.gitkeep internal/database/.gitkeep 
+          touch internal/utils/.gitkeep pkg/caddy/.gitkeep
+          
+          # Make sure the module path is correct in all go files
           find . -name "*.go" -type f -exec sed -i 's|github.com/yourusername/webpanel|github.com/doko89/webpanel|g' {} \;
           
           mkdir -p dist
@@ -47,63 +50,12 @@ jobs:
           tar -czf webpanel_linux_armv7.tar.gz webpanel_linux_armv7
           tar -czf webpanel_linux_armv6.tar.gz webpanel_linux_armv6
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Assets
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/webpanel_linux_amd64.tar.gz
-          asset_name: webpanel_linux_amd64.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Upload Release Assets (i386)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/webpanel_linux_i386.tar.gz
-          asset_name: webpanel_linux_i386.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Upload Release Assets (arm64)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/webpanel_linux_arm64.tar.gz
-          asset_name: webpanel_linux_arm64.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Upload Release Assets (armv7)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/webpanel_linux_armv7.tar.gz
-          asset_name: webpanel_linux_armv7.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Upload Release Assets (armv6)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/webpanel_linux_armv6.tar.gz
-          asset_name: webpanel_linux_armv6.tar.gz
-          asset_content_type: application/gzip 
+          files: |
+            dist/webpanel_linux_amd64.tar.gz
+            dist/webpanel_linux_i386.tar.gz
+            dist/webpanel_linux_arm64.tar.gz
+            dist/webpanel_linux_armv7.tar.gz
+            dist/webpanel_linux_armv6.tar.gz

@@ -14,8 +14,9 @@ const (
 	siteConfigDir = "/etc/caddy/sites.d"
 )
 
-// Add membuat situs proxy baru dengan domain dan target yang ditentukan
+// Add creates a new proxy with the given domain and target
 func Add(domain, target string) {
+	fmt.Printf("Adding proxy for domain: %s to target: %s\n", domain, target)
 	// Validasi domain dan target
 	if !isValidDomain(domain) {
 		fmt.Printf("Error: Domain tidak valid: %s\n", domain)
@@ -47,8 +48,9 @@ func Add(domain, target string) {
 	fmt.Printf("Situs proxy %s -> %s berhasil dibuat\n", domain, target)
 }
 
-// Remove menghapus situs proxy dengan domain yang ditentukan
+// Remove removes an existing proxy
 func Remove(domain string) {
+	fmt.Printf("Removing proxy for domain: %s\n", domain)
 	// Validasi domain
 	if !isValidDomain(domain) {
 		fmt.Printf("Error: Domain tidak valid: %s\n", domain)
@@ -79,8 +81,9 @@ func Remove(domain string) {
 	fmt.Printf("Situs proxy %s berhasil dihapus\n", domain)
 }
 
-// List menampilkan semua situs proxy yang dikonfigurasi
+// List displays all proxies
 func List() {
+	fmt.Println("Listing all proxies:")
 	files, err := ioutil.ReadDir(siteConfigDir)
 	if err != nil {
 		fmt.Printf("Error: Tidak dapat membaca direktori konfigurasi: %s\n", err)

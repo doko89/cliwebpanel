@@ -8,8 +8,9 @@ import (
 	"strings"
 )
 
-// Create membuat database baru dengan pengguna dan kata sandi yang ditentukan
+// Create creates a new database with user and password
 func Create(dbName, dbUser, dbPassword string) {
+	fmt.Printf("Creating database: %s with user: %s\n", dbName, dbUser)
 	// Validasi input
 	if !isValidName(dbName) || !isValidName(dbUser) {
 		fmt.Println("Error: Nama database dan pengguna hanya boleh berisi huruf, angka, dan garis bawah")
@@ -37,8 +38,9 @@ func Create(dbName, dbUser, dbPassword string) {
 	fmt.Printf("Database %s dan pengguna %s berhasil dibuat\n", dbName, dbUser)
 }
 
-// Delete menghapus database dan penggunanya
+// Delete removes an existing database
 func Delete(dbName string) {
+	fmt.Printf("Deleting database: %s\n", dbName)
 	// Validasi input
 	if !isValidName(dbName) {
 		fmt.Println("Error: Nama database hanya boleh berisi huruf, angka, dan garis bawah")

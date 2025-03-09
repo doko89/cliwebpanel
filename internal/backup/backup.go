@@ -15,8 +15,9 @@ const (
 	cronFile        = "/etc/cron.d/webpanel-backup"
 )
 
-// Enable mengaktifkan backup untuk domain tertentu
+// Enable enables backup for a specific domain
 func Enable(backupType, domain string) {
+	fmt.Printf("Enabling %s backup for domain: %s\n", backupType, domain)
 	// Validasi tipe backup
 	if backupType != "daily" && backupType != "weekly" {
 		fmt.Printf("Error: Tipe backup tidak valid: %s (harus daily atau weekly)\n", backupType)
@@ -52,8 +53,9 @@ func Enable(backupType, domain string) {
 	fmt.Printf("Backup %s untuk %s berhasil diaktifkan\n", backupType, domain)
 }
 
-// Disable menonaktifkan backup untuk domain tertentu
+// Disable disables backup for a specific domain
 func Disable(backupType, domain string) {
+	fmt.Printf("Disabling %s backup for domain: %s\n", backupType, domain)
 	// Validasi tipe backup
 	if backupType != "daily" && backupType != "weekly" {
 		fmt.Printf("Error: Tipe backup tidak valid: %s (harus daily atau weekly)\n", backupType)
@@ -69,8 +71,9 @@ func Disable(backupType, domain string) {
 	fmt.Printf("Backup %s untuk %s berhasil dinonaktifkan\n", backupType, domain)
 }
 
-// AddDBBackup menambahkan backup database
+// AddDBBackup adds database backup for a specific database
 func AddDBBackup(dbName string) {
+	fmt.Printf("Adding database backup for: %s\n", dbName)
 	// Validasi nama database
 	if !isValidDBName(dbName) {
 		fmt.Printf("Error: Nama database tidak valid: %s\n", dbName)

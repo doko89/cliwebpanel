@@ -10,13 +10,9 @@ import (
 	"github.com/doko89/webpanel/pkg/caddy"
 )
 
-const (
-	sitesDir      = "/apps/sites"
-	siteConfigDir = "/etc/caddy/sites.d"
-)
-
-// Add membuat situs baru dengan domain yang ditentukan
+// Add creates a new site with the given domain name
 func Add(domain string) {
+	fmt.Printf("Adding site for domain: %s\n", domain)
 	// Validasi domain
 	if !isValidDomain(domain) {
 		fmt.Printf("Error: Domain tidak valid: %s\n", domain)
@@ -56,8 +52,9 @@ func Add(domain string) {
 	fmt.Printf("Situs %s berhasil dibuat\n", domain)
 }
 
-// Remove menghapus situs dengan domain yang ditentukan
+// Remove removes an existing site
 func Remove(domain string) {
+	fmt.Printf("Removing site for domain: %s\n", domain)
 	// Validasi domain
 	if !isValidDomain(domain) {
 		fmt.Printf("Error: Domain tidak valid: %s\n", domain)
@@ -89,8 +86,9 @@ func Remove(domain string) {
 	fmt.Printf("Catatan: Direktori situs di %s/%s tidak dihapus untuk keamanan data\n", sitesDir, domain)
 }
 
-// List menampilkan semua situs yang dikonfigurasi
+// List displays all sites
 func List() {
+	fmt.Println("Listing all sites:")
 	files, err := ioutil.ReadDir(siteConfigDir)
 	if err != nil {
 		fmt.Printf("Error: Tidak dapat membaca direktori konfigurasi: %s\n", err)
