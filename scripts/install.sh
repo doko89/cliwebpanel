@@ -48,16 +48,16 @@ VERSION="0.1.0"  # Ganti dengan versi terbaru
 
 case $ARCH in
     amd64)
-        BINARY_URL="https://github.com/doko89/webpanel/releases/download/v${VERSION}/webpanel_linux_amd64.tar.gz"
+        BINARY_URL="https://github.com/doko89/cliwebpanel/releases/download/v${VERSION}/webpanel_linux_amd64.tar.gz"
         ;;
     i386)
-        BINARY_URL="https://github.com/doko89/webpanel/releases/download/v${VERSION}/webpanel_linux_i386.tar.gz"
+        BINARY_URL="https://github.com/doko89/cliwebpanel/releases/download/v${VERSION}/webpanel_linux_i386.tar.gz"
         ;;
     arm64)
-        BINARY_URL="https://github.com/doko89/webpanel/releases/download/v${VERSION}/webpanel_linux_arm64.tar.gz"
+        BINARY_URL="https://github.com/doko89/cliwebpanel/releases/download/v${VERSION}/webpanel_linux_arm64.tar.gz"
         ;;
     armhf)
-        BINARY_URL="https://github.com/doko89/webpanel/releases/download/v${VERSION}/webpanel_linux_armv7.tar.gz"
+        BINARY_URL="https://github.com/doko89/cliwebpanel/releases/download/v${VERSION}/webpanel_linux_armv7.tar.gz"
         ;;
     *)
         echo "Error: Arsitektur $ARCH tidak didukung"
