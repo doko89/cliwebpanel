@@ -20,9 +20,8 @@ jobs:
 
       - name: Build binaries
         run: |
-          id
-          pwd
-          ls -la
+          mkdir -p ./cmd/webpanel
+          cp main.go ./cmd/webpanel
           mkdir -p dist
           GOOS=linux GOARCH=amd64 go build -o dist/webpanel_linux_amd64 ./cmd/webpanel
           GOOS=linux GOARCH=386 go build -o dist/webpanel_linux_i386 ./cmd/webpanel
