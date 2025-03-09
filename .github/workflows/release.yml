@@ -21,7 +21,18 @@ jobs:
       - name: Build binaries
         run: |
           mkdir -p ./cmd/webpanel
-          cp main.go ./cmd/webpanel
+          cp main.go ./cmd/webpanel/main.go
+          mkdir -p ./internal/module
+          mkdir -p ./internal/site
+          mkdir -p ./internal/php
+          mkdir -p ./internal/proxy
+          mkdir -p ./internal/backup
+          mkdir -p ./internal/database
+          mkdir -p ./internal/utils
+          mkdir -p ./pkg/caddy
+          
+          find . -name "*.go" -type f -exec sed -i 's|github.com/yourusername/webpanel|github.com/doko89/webpanel|g' {} \;
+          
           mkdir -p dist
           GOOS=linux GOARCH=amd64 go build -o dist/webpanel_linux_amd64 ./cmd/webpanel
           GOOS=linux GOARCH=386 go build -o dist/webpanel_linux_i386 ./cmd/webpanel

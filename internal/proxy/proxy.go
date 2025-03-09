@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/yourusername/webpanel/pkg/caddy"
+	"github.com/doko89/webpanel/pkg/caddy"
 )
 
 const (
