@@ -13,11 +13,23 @@ A command-line web panel tool for server administration with minimal sysadmin ex
 
 ## Installation
 
+### Quick Install (Debian/Ubuntu)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/doko89/webpanel/main/scripts/install.sh | sudo bash
+```
+
+### Manual Installation
+
 ```bash
 # Download the latest release for your platform
-# Make executable and move to path
+wget https://github.com/doko89/webpanel/releases/download/v0.1.0/webpanel_linux_amd64.tar.gz
+tar -xzf webpanel_linux_amd64.tar.gz
 chmod +x webpanel_linux_amd64
 sudo mv webpanel_linux_amd64 /usr/local/bin/webpanel
+
+# Install dependencies
+sudo webpanel install
 ```
 
 ## Usage
@@ -42,6 +54,8 @@ webpanel module enable php81 domain.com
 ## Building from source
 
 ```bash
+git clone https://github.com/doko89/webpanel.git
+cd webpanel
 make build
 ```
 
