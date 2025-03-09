@@ -42,6 +42,13 @@ mkdir -p /apps/sites
 mkdir -p /backup/daily
 mkdir -p /backup/weekly
 
+# install caddy
+apt-get install -y debian-keyring debian-archive-keyring apt-transport-https
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
+apt-get update
+apt-get install -y caddy
+
 # Unduh binary webpanel dari GitHub
 ARCH=$(dpkg --print-architecture)
 VERSION="0.1.0"  # Ganti dengan versi terbaru
@@ -90,7 +97,7 @@ cat > /etc/caddy/Caddyfile << EOF
 }
 
 # Import modul
-import module.d/*.conf
+import module.d/*
 
 # Impor semua situs dari direktori sites.d
 import sites.d/*.conf
@@ -98,7 +105,7 @@ EOF
 
 # Buat modul default
 mkdir -p /etc/caddy/module.d
-cat > /etc/caddy/module.d/spa.conf << EOF
+cat > /etc/caddy/module.d/spa << EOF
 (spa) {
     @spa {
         not path *.php
@@ -123,7 +130,7 @@ cat > /etc/caddy/module.d/spa.conf << EOF
 }
 EOF
 
-cat > /etc/caddy/module.d/security.conf << EOF
+cat > /etc/caddy/module.d/security << EOF
 (security) {
     header {
         # Keamanan dasar
@@ -139,7 +146,7 @@ cat > /etc/caddy/module.d/security.conf << EOF
 }
 EOF
 
-cat > /etc/caddy/module.d/ratelimit.conf << EOF
+cat > /etc/caddy/module.d/ratelimit << EOF
 (ratelimit) {
     rate_limit {
         zone dynamic {
@@ -151,13 +158,13 @@ cat > /etc/caddy/module.d/ratelimit.conf << EOF
 }
 EOF
 
-cat > /etc/caddy/module.d/compression.conf << EOF
+cat > /etc/caddy/module.d/compression << EOF
 (compression) {
     encode gzip zstd
 }
 EOF
 
-cat > /etc/caddy/module.d/cache-headers.conf << EOF
+cat > /etc/caddy/module.d/cache-headers << EOF
 (cache-headers) {
     @static {
         path *.css *.js *.png *.jpg *.jpeg *.gif *.ico *.svg *.woff *.woff2 *.ttf *.eot
@@ -166,7 +173,7 @@ cat > /etc/caddy/module.d/cache-headers.conf << EOF
 }
 EOF
 
-cat > /etc/caddy/module.d/local-access.conf << EOF
+cat > /etc/caddy/module.d/local-access << EOF
 (local-access) {
     @local {
         remote_ip 127.0.0.1 192.168.0.0/16 10.0.0.0/8 172.16.0.0/12
@@ -188,13 +195,26 @@ if ! id -u caddy > /dev/null 2>&1; then
     useradd -r -d /var/lib/caddy -s /usr/sbin/nologin caddy
 fi
 
+# Buat grup www-data jika belum ada
+if ! getent group www-data > /dev/null 2>&1; then
+    groupadd www-data
+fi
+
+# Tambahkan pengguna caddy ke grup www-data
+usermod -a -G www-data caddy
+
 # Atur kepemilikan direktori
 chown -R caddy:caddy /etc/caddy
-chown -R caddy:caddy /apps/sites
+chown -R caddy:www-data /apps/sites
+chmod -R 750 /apps/sites
 chown -R caddy:caddy /backup
 
+# Buat file cron untuk backup
+touch /etc/cron.d/webpanel-backup
+chmod 644 /etc/cron.d/webpanel-backup
+
 echo "Webpanel berhasil diinstal!"
-echo "Jalankan 'webpanel install' untuk menginstal dependensi yang diperlukan"
+echo "Jalankan 'webpanel install' untuk menginstal dependensi yang diperlukan:"
 echo "  - Caddy web server"
 echo "  - PHP (versi yang Anda pilih)"
 echo "  - Composer (opsional)"
