@@ -1,0 +1,52 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+webpanel
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# Dependency directories
+vendor/
+node_modules/
+
+# Build output directories
+/bin/
+/dist/
+/build/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-workspace
+
+# macOS specific files
+.DS_Store
+
+# Log files
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*
+
+# Backup files
+*~
+*.bak
+
+# Temporary files
+tmp/
+temp/
+project.md

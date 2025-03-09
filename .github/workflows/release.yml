@@ -1,0 +1,96 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Build binaries
+        run: |
+          mkdir -p dist
+          GOOS=linux GOARCH=amd64 go build -o dist/webpanel_linux_amd64 ./cmd/webpanel
+          GOOS=linux GOARCH=386 go build -o dist/webpanel_linux_i386 ./cmd/webpanel
+          GOOS=linux GOARCH=arm64 go build -o dist/webpanel_linux_arm64 ./cmd/webpanel
+          GOOS=linux GOARCH=arm GOARM=7 go build -o dist/webpanel_linux_armv7 ./cmd/webpanel
+          GOOS=linux GOARCH=arm GOARM=6 go build -o dist/webpanel_linux_armv6 ./cmd/webpanel
+          
+          cd dist
+          tar -czf webpanel_linux_amd64.tar.gz webpanel_linux_amd64
+          tar -czf webpanel_linux_i386.tar.gz webpanel_linux_i386
+          tar -czf webpanel_linux_arm64.tar.gz webpanel_linux_arm64
+          tar -czf webpanel_linux_armv7.tar.gz webpanel_linux_armv7
+          tar -czf webpanel_linux_armv6.tar.gz webpanel_linux_armv6
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/webpanel_linux_amd64.tar.gz
+          asset_name: webpanel_linux_amd64.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Release Assets (i386)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/webpanel_linux_i386.tar.gz
+          asset_name: webpanel_linux_i386.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Release Assets (arm64)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/webpanel_linux_arm64.tar.gz
+          asset_name: webpanel_linux_arm64.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Release Assets (armv7)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/webpanel_linux_armv7.tar.gz
+          asset_name: webpanel_linux_armv7.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Release Assets (armv6)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/webpanel_linux_armv6.tar.gz
+          asset_name: webpanel_linux_armv6.tar.gz
+          asset_content_type: application/gzip 
