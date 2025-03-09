@@ -10,6 +10,11 @@ import (
 	"github.com/doko89/webpanel/pkg/caddy"
 )
 
+var (
+	sitesDir      = "/var/www"
+	siteConfigDir = "/etc/caddy/sites"
+)
+
 // Add creates a new site with the given domain name
 func Add(domain string) {
 	fmt.Printf("Adding site for domain: %s\n", domain)
