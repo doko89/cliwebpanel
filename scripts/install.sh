@@ -89,13 +89,16 @@ cat > /etc/caddy/Caddyfile << EOF
     email admin@localhost
 }
 
+# Import modul
+import module.d/*.conf
+
 # Impor semua situs dari direktori sites.d
 import sites.d/*.conf
 EOF
 
 # Buat modul default
 mkdir -p /etc/caddy/module.d
-cat > /etc/caddy/module.d/spa << EOF
+cat > /etc/caddy/module.d/spa.conf << EOF
 (spa) {
     @spa {
         not path *.php
@@ -120,7 +123,7 @@ cat > /etc/caddy/module.d/spa << EOF
 }
 EOF
 
-cat > /etc/caddy/module.d/security << EOF
+cat > /etc/caddy/module.d/security.conf << EOF
 (security) {
     header {
         # Keamanan dasar
@@ -136,7 +139,7 @@ cat > /etc/caddy/module.d/security << EOF
 }
 EOF
 
-cat > /etc/caddy/module.d/ratelimit << EOF
+cat > /etc/caddy/module.d/ratelimit.conf << EOF
 (ratelimit) {
     rate_limit {
         zone dynamic {
@@ -148,13 +151,13 @@ cat > /etc/caddy/module.d/ratelimit << EOF
 }
 EOF
 
-cat > /etc/caddy/module.d/compression << EOF
+cat > /etc/caddy/module.d/compression.conf << EOF
 (compression) {
     encode gzip zstd
 }
 EOF
 
-cat > /etc/caddy/module.d/cache-headers << EOF
+cat > /etc/caddy/module.d/cache-headers.conf << EOF
 (cache-headers) {
     @static {
         path *.css *.js *.png *.jpg *.jpeg *.gif *.ico *.svg *.woff *.woff2 *.ttf *.eot
@@ -163,7 +166,7 @@ cat > /etc/caddy/module.d/cache-headers << EOF
 }
 EOF
 
-cat > /etc/caddy/module.d/local-access << EOF
+cat > /etc/caddy/module.d/local-access.conf << EOF
 (local-access) {
     @local {
         remote_ip 127.0.0.1 192.168.0.0/16 10.0.0.0/8 172.16.0.0/12
