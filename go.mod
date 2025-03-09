@@ -1,3 +1,3 @@
-module github.com/yourusername/webpanel
+module github.com/doko/webpanel
 
-go 1.17 
+go 1.17
